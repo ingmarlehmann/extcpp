@@ -22,7 +22,16 @@ public:
 
     // Push an item on to the queue. Will notify any consumers waiting
     // for an item.
-    void push(T value)
+    void push(T const& value)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        queue_.push(value);
+        cond_.notify_one();
+    }
+
+    // Push an item on to the queue. Will notify any consumers waiting
+    // for an item.
+    void push(T&& value)
     {
         std::lock_guard<std::mutex> lock(mutex_);
         queue_.push(value);
@@ -51,6 +60,10 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.size();
     }
+
+private:
+    SafeQueue(const SafeQueue& other) = delete;
+    SafeQueue& operator=(const SafeQueue& other) = delete;
 
 private:
     Container queue_;
