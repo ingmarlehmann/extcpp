@@ -54,11 +54,32 @@ public:
         return val;
     }
 
-    // The number of items currently in the queue.
+    // WARNING: This is multi threaded code. Be wary of using size()
+    //  since after the size() call has completed,
+    //  in the case of many producers/consumers on different threads,
+    //  already at the next instruction in the calling thread
+    //  the size may have changed.
+    //
+    // USE WITH CARE!
+    //
+    // Example:
+    //  auto size = queue.size();
+    //  if(size != 0) <-- size may already have changed.
+    //  {
+    //   ...
+    //  }
     size_type size()
     {
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.size();
+    }
+
+    // See the warning text about .size().
+    // USE WITH CARE!
+    bool empty()
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return queue_.size() == 0;
     }
 
 private:
