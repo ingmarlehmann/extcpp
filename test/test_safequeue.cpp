@@ -99,21 +99,6 @@ TEST_F(Fixture, st_push_user_type)
     ASSERT_EQ(queue.size(), NUM_ELEMENTS);
 }
 
-TEST_F(Fixture, st_push_movable_type)
-{
-    using EventType = std::unique_ptr<TestEvent>;
-
-    extcpp::SafeQueue<EventType> queue;
-
-    const int NUM_ELEMENTS = 1000;
-    for(int i=0; i<NUM_ELEMENTS; ++i)
-    {
-        queue.push(std::make_unique<TestEvent>(i, 0));
-    }
-
-    ASSERT_EQ(queue.size(), NUM_ELEMENTS);
-}
-
 TEST_F(Fixture, st_pop_user_type)
 {
     extcpp::SafeQueue<TestEvent> queue;
@@ -130,6 +115,44 @@ TEST_F(Fixture, st_pop_user_type)
     {
         TestEvent ev(i, 0);
         ASSERT_EQ(queue.pop(), ev);
+    }
+
+    ASSERT_EQ(queue.size(), 0);
+}
+
+TEST_F(Fixture, st_push_movable_type)
+{
+    using EventType = std::unique_ptr<TestEvent>;
+    extcpp::SafeQueue<EventType> queue;
+
+    const int NUM_ELEMENTS = 1000;
+    for(int i=0; i<NUM_ELEMENTS; ++i)
+    {
+        queue.push(std::make_unique<TestEvent>(i, 0));
+    }
+
+    ASSERT_EQ(queue.size(), NUM_ELEMENTS);
+}
+
+TEST_F(Fixture, st_pop_movable_type)
+{
+    using EventType = std::unique_ptr<TestEvent>;
+    extcpp::SafeQueue<EventType> queue;
+
+    const int NUM_ELEMENTS = 1000;
+    for(int i=0; i<NUM_ELEMENTS; ++i)
+    {
+        queue.push(std::make_unique<TestEvent>(i, 0));
+    }
+
+    ASSERT_EQ(queue.size(), NUM_ELEMENTS);
+
+    for(int i=0; i<NUM_ELEMENTS; ++i)
+    {
+        TestEvent ev(i, 0);
+        auto item = queue.pop();
+
+        ASSERT_EQ(*item, ev);
     }
 
     ASSERT_EQ(queue.size(), 0);

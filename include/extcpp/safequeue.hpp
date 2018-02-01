@@ -49,7 +49,7 @@ public:
             // release lock as long as the wait and reaquire it afterwards.
             cond_.wait(lock);
         }
-        T val = queue_.front();
+        T val = std::move(queue_.front());
         queue_.pop();
         return val;
     }
