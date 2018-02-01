@@ -34,7 +34,7 @@ public:
     void push(T&& value)
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        queue_.push(value);
+        queue_.push(std::move(value));
         cond_.notify_one();
     }
 
