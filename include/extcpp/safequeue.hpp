@@ -14,7 +14,11 @@ template <typename T, typename Container = std::queue<T>>
 class SafeQueue
 {
 public:
+    using const_reference = typename Container::const_reference;
+    using container_type = Container;
+    using reference = typename Container::reference;
     using size_type = typename Container::size_type;
+    using value_type = T;
 
 public:
     SafeQueue() = default;
