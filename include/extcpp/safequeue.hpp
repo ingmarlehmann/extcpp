@@ -10,7 +10,7 @@ namespace extcpp {
 // Thread safe (re-entrant) Producer/Consumer queue.
 // Supports multiple producers and multiple consumers.
 // ---------------------------------------------------
-template <typename T, typename Container = std::queue<T> >
+template <typename T, typename Container = std::queue<T>>
 class SafeQueue
 {
 public:
@@ -35,6 +35,16 @@ public:
     {
         std::lock_guard<std::mutex> lock(mutex_);
         queue_.push(std::move(value));
+        cond_.notify_one();
+    }
+
+    // Push an item to the queue. Will notify any consumers waiting
+    // for an item. The item will be in-place constructed.
+    template< class... Args >
+    void emplace( Args&& ...args )
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        queue_.emplace(std::forward<Args>(args)...);
         cond_.notify_one();
     }
 

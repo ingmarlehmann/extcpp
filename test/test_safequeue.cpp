@@ -158,6 +158,29 @@ TEST_F(Fixture, st_pop_movable_type)
     ASSERT_EQ(queue.size(), 0);
 }
 
+TEST_F(Fixture, st_emplace_user_type)
+{
+    extcpp::SafeQueue<TestEvent> queue;
+
+    const int NUM_ELEMENTS = 1000;
+    for(int i=0; i<NUM_ELEMENTS; ++i)
+    {
+        queue.emplace(TestEvent(i, 0));
+    }
+
+    ASSERT_EQ(queue.size(), NUM_ELEMENTS);
+
+    for(int i=0; i<NUM_ELEMENTS; ++i)
+    {
+        TestEvent ev(i, 0);
+        auto item = queue.pop();
+
+        ASSERT_EQ(item, ev);
+    }
+
+    ASSERT_EQ(queue.size(), 0);
+}
+
 TEST_F(Fixture, st_ensure_pop_block)
 {
     extcpp::SafeQueue<int> queue;
